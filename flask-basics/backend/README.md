@@ -3,6 +3,6 @@
 ## Для запуска
 
 ```sh
-pip install flask
-python appserver.py
+pip install -r requirements.txt
+python application.py
 ```
