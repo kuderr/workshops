@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from flask import Flask
 from models import db, User, Post, Comment
+from functools import wraps
 
 
 def create_app():
@@ -19,6 +20,11 @@ app = create_app()
 
 
 def auth_required(f):
+    """
+        Декоратор для примера.
+        Обязательно переписать под своё приложение.
+    """
+    @wraps(f)
     def _verify(*args, **kwargs):
         auth_headers = request.headers.get('Authorization', '').split()
 
@@ -38,12 +44,14 @@ def auth_required(f):
 
 
 @app.route('/posts/', methods=['GET'])
+@auth_required
 def get_posts():
     posts = [post.to_dict() for post in Post.query.all()]
     return jsonify(posts), 200
 
 
 @app.route('/posts/', methods=['POST'])
+@auth_required
 def add_post():
     post_data = request.get_json()
 
@@ -60,6 +68,7 @@ def add_post():
 
 
 @app.route('/posts/<int:post_id>', methods=['PUT'])
+@auth_required
 def edit_post(post_id):
     post_data = request.get_json()
     post_to_edit = Post.query.get(post_id)
@@ -72,6 +81,7 @@ def edit_post(post_id):
 
 
 @app.route('/posts/<int:post_id>', methods=['DELETE'])
+@auth_required
 def delete_post(post_id):
     post_to_delete = Post.query.get(post_id)
 

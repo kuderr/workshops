@@ -410,6 +410,7 @@ python manage.py shell
 from flask import request, jsonify
 from flask import Flask
 from models import db, User, Post, Comment
+from functools import wraps
 
 
 def create_app():
@@ -428,6 +429,7 @@ app = create_app()
 
 
 def auth_required(f):
+    @wraps(f)
     def _verify(*args, **kwargs):
         auth_headers = request.headers.get('Authorization', '').split()
 
@@ -447,12 +449,14 @@ def auth_required(f):
 
 
 @app.route('/posts/', methods=['GET'])
+@auth_required
 def get_posts():
     posts = [post.to_dict() for post in Post.query.all()]
     return jsonify(posts), 200
 
 
 @app.route('/posts/', methods=['POST'])
+@auth_required
 def add_post():
     post_data = request.get_json()
 
@@ -469,6 +473,7 @@ def add_post():
 
 
 @app.route('/posts/<int:post_id>', methods=['PUT'])
+@auth_required
 def edit_post(post_id):
     post_data = request.get_json()
     post_to_edit = Post.query.get(post_id)
@@ -481,6 +486,7 @@ def edit_post(post_id):
 
 
 @app.route('/posts/<int:post_id>', methods=['DELETE'])
+@auth_required
 def delete_post(post_id):
     post_to_delete = Post.query.get(post_id)
 
@@ -492,24 +498,25 @@ def delete_post(post_id):
 
 if __name__ == '__main__':
     app.run()
+
 ```
 
 ```diff 1:19
 ```
 
-```diff 21:38
+```diff 21:39
 ```
 
-```diff 39:43
+```diff 41:46
 ```
 
-```diff 45:59
+```diff 48:63
 ```
 
-```diff 61:71
+```diff 64:77
 ```
 
-```diff 73:81
+```diff 79:89
 ```
 
 </CodeSurfer>
@@ -523,6 +530,7 @@ if __name__ == '__main__':
 from flask import request, jsonify
 from flask import Flask
 from models import db, User, Post, Comment
+from functools import wraps
 
 
 def create_app():
@@ -541,6 +549,7 @@ app = create_app()
 
 
 def auth_required(f):
+    @wraps(f)
     def _verify(*args, **kwargs):
         auth_headers = request.headers.get('Authorization', '').split()
 
@@ -560,12 +569,14 @@ def auth_required(f):
 
 
 @app.route('/posts/', methods=['GET'])
+@auth_required
 def get_posts():
     posts = [post.to_dict() for post in Post.query.all()]
     return jsonify(posts), 200
 
 
 @app.route('/posts/', methods=['POST'])
+@auth_required
 def add_post():
     post_data = request.get_json()
 
@@ -582,6 +593,7 @@ def add_post():
 
 
 @app.route('/posts/<int:post_id>', methods=['PUT'])
+@auth_required
 def edit_post(post_id):
     post_data = request.get_json()
     post_to_edit = Post.query.get(post_id)
@@ -594,6 +606,7 @@ def edit_post(post_id):
 
 
 @app.route('/posts/<int:post_id>', methods=['DELETE'])
+@auth_required
 def delete_post(post_id):
     post_to_delete = Post.query.get(post_id)
 
